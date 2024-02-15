@@ -18,4 +18,4 @@ jobs:
       - name: Build and push Docker image
         run: |
           DATE=$(date +"%d%m%Y")
-          docker buildx build --push --tag ghcr.io/${{ github.repository_owner }}/front:$DATE --tag ghcr.io/${{ github.repository_owner }}/front:latest .
+          docker buildx build --push --tag ghcr.io/isabellabacalao/front:$DATE --tag ghcr.io/${{ github.repository_owner }}/front:latest .
