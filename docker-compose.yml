@@ -1,0 +1,39 @@
+version: '3.7'
+
+services:
+  ollama:
+    image: ollama/ollama
+    container_name: ollama
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ollama.rule=PathPrefix(`/ollama`)"
+      - "traefik.http.middlewares.ollama-stripprefix.stripprefix.prefixes=/ollama"
+      - "traefik.http.routers.ollama.middlewares=ollama-stripprefix"
+      - "traefik.http.services.ollama.loadbalancer.server.port=11434"
+    depends_on:
+      - traefik
+  gprrrr:
+    image: registry.gitlab.com/isen5910803/ollama-frontend/gprrrr:latest
+    container_name: gprrrr
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.gprrrr.rule=PathPrefix(`/gprrrr`)"
+      - "traefik.http.services.gprrrr.loadbalancer.server.port=5001"
+    depends_on:
+      - traefik
+
+  traefik:
+    image: traefik:v2.5
+    container_name: traefik
+    command:
+      - --api.insecure=true
+      - --api.dashboard=true
+      - --api.debug=true
+      - --providers.docker=true
+      - --providers.docker.exposedbydefault=false
+      - --entrypoints.http.address=:80
+    ports:
+      - "80:80" 
+      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
